@@ -4,6 +4,10 @@
 #include "pcap++/PcapLiveDevice.h"
 #include "pcap++/PcapLiveDeviceList.h"
 #include "pcap++/UdpLayer.h"
+#include "imgui.h"
+#include "imconfig.h"
+#include "imgui_internal.h"
+#include "imstb_truetype.h"
 
 #include "gl/glew.h"
 #include "gl/glu.h"
@@ -78,6 +82,7 @@ int SDL_main(int argc, char* argv[])
     pcpp::PcapLiveDevice* dev = nullptr;
 
     WorkGroup work;
+
 
     if (packet_dump_path && !dump_packets)
     {
@@ -493,7 +498,7 @@ void do_render(GraphicsState* gfx)
                     gltSetText(text, txt);
                     gltBeginDraw();
                     gltColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-                    gltDrawText3D(text, x, y, z, scale, (GLfloat*)&view[0][0], (GLfloat*)&proj[0][0]);
+                    gltDrawText3D(text, x, y, z, scale*1.5f, (GLfloat*)&view[0][0], (GLfloat*)&proj[0][0]);
                     gltEndDraw();
                     gltDeleteText(text);
                 };
@@ -624,7 +629,7 @@ void do_render(GraphicsState* gfx)
                         glm::vec3 player_pos(player->pos.x, player->pos.y, player->pos.z);
                         glm::vec3 entry_pos(entry->pos.x, entry->pos.y, entry->pos.z);
 
-                        static constexpr float MIN_DISTANCE_FOR_LOOT = 10.0f;
+                        static constexpr float MIN_DISTANCE_FOR_LOOT = 5.0f;
                         if (float distance = glm::length(entry_pos - player_pos); distance >= MIN_DISTANCE_FOR_LOOT)
                         {
                             if (draw_text)
@@ -694,6 +699,13 @@ void do_render(GraphicsState* gfx)
                     val.resize(std::snprintf(val.data(), val.size(), "%.1f", total_val / 1000.0f));
                     std::string name_and_val = obs->name + " (" + val + "k)";
                     draw_text(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, 0.05f, name_and_val.c_str(), r, g, b, get_alpha_for_y(player_y, obs->pos.y), &view, &projection);
+                    if (total_val > 500000) {
+                        draw_line(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z,obs->pos.x, obs->pos.y + 12.0f, obs->pos.z, 21, 0, 255, 255);
+                    }
+                    else if (total_val > 1000000) {
+                        draw_line(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, obs->pos.x, obs->pos.y + 12.0f, obs->pos.z, 255, 0, 174, 255);
+                    }
+                    
                 }
 
                 for (auto& [pos, txt, r, g, b] : loot_text_to_render)
