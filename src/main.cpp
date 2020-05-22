@@ -27,8 +27,8 @@
 #define GLT_IMPLEMENTATION
 #include "gltext.h"
 
-#define LOCAL_ADAPTER_IP_ADDRESS "fill.me.in" // ipconfig in cmd prompt on cheat machine, find local address, fill it in here
-#define MACHINE_PLAYING_GAME_IP_ADDRESS "fill.me.in" // the local IP address of the machine communicating with EFT servers
+#define LOCAL_ADAPTER_IP_ADDRESS "192.168.137.1" // ipconfig in cmd prompt on cheat machine, find local address, fill it in here
+#define MACHINE_PLAYING_GAME_IP_ADDRESS "192.168.137.85" // the local IP address of the machine communicating with EFT servers
 
 struct Packet
 {
@@ -423,18 +423,24 @@ bool get_loot_information(tk::LootEntry* entry, bool include_equipment, bool* dr
     *g = 0;
     *b = 0;
     *draw_beam = false;
-    *draw_text = !entry->unknown;
-
+    *draw_text = false; //Don't display text for loot under 80k
     // highlight overrides all
-    if (entry->highlighted)
+    if (entry->highlighted || entry->value > 80000)
     {
         draw = true;
         *draw_beam = true;
         *beam_height = 200.0f;
         *draw_text = true;
-        *r = 153;
-        *g = 101;
-        *b = 21;
+        if (entry->value > 80000) {
+            *r = 0;
+            *g = 255;
+            *b = 170;
+        }
+        else {
+            *r = 153;
+            *g = 101;
+            *b = 21;
+        }
     }
 
     return draw;
@@ -694,12 +700,12 @@ void do_render(GraphicsState* gfx)
                     std::string val(16, '\0');
                     val.resize(std::snprintf(val.data(), val.size(), "%.1f", total_val / 1000.0f));
                     std::string name_and_val = obs->name + " (" + val + "k)";
-                    draw_text(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, 0.05f, name_and_val.c_str(), r, g, b, get_alpha_for_y(player_y, obs->pos.y), &view, &projection);
-                    if (total_val > 500000) {
-                        draw_line(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z,obs->pos.x, obs->pos.y + 12.0f, obs->pos.z, 21, 0, 255, 255);
+                    draw_text(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, 0.10f, name_and_val.c_str(), r, g, b, get_alpha_for_y(player_y, obs->pos.y), &view, &projection);
+                    if (total_val > 250000) {
+                        draw_box(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z,0.2f,15.0f,0.2f, 21, 0, 255);
                     }
-                    else if (total_val > 1000000) {
-                        draw_line(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, obs->pos.x, obs->pos.y + 12.0f, obs->pos.z, 255, 0, 174, 255);
+                    else if (total_val > 500000) {
+                        draw_box(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, 0.2f, 20.0f, 0.2f, 255, 0, 174);
                     }
                     
                 }
