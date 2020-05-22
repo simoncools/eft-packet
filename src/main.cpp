@@ -4,10 +4,6 @@
 #include "pcap++/PcapLiveDevice.h"
 #include "pcap++/PcapLiveDeviceList.h"
 #include "pcap++/UdpLayer.h"
-#include "imgui.h"
-#include "imconfig.h"
-#include "imgui_internal.h"
-#include "imstb_truetype.h"
 
 #include "gl/glew.h"
 #include "gl/glu.h"
