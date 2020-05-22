@@ -500,7 +500,7 @@ void do_render(GraphicsState* gfx)
                     gltSetText(text, txt);
                     gltBeginDraw();
                     gltColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-                    gltDrawText3D(text, x, y, z, scale*1.5f, (GLfloat*)&view[0][0], (GLfloat*)&proj[0][0]);
+                    gltDrawText3D(text, x, y, z, scale, (GLfloat*)&view[0][0], (GLfloat*)&proj[0][0]);
                     gltEndDraw();
                     gltDeleteText(text);
                 };
@@ -702,17 +702,17 @@ void do_render(GraphicsState* gfx)
                     std::string name_and_val = obs->name + " (" + val + "k)";
                     draw_text(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, 0.10f, name_and_val.c_str(), r, g, b, get_alpha_for_y(player_y, obs->pos.y), &view, &projection);
                     if (total_val > 250000) {
-                        draw_box(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z,0.2f,15.0f,0.2f, 21, 0, 255);
+                        draw_box(obs->pos.x, obs->pos.y + 17.0f, obs->pos.z,0.5f,15.0f,0.5f, 21, 0, 255);
                     }
                     else if (total_val > 500000) {
-                        draw_box(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, 0.2f, 20.0f, 0.2f, 255, 0, 174);
+                        draw_box(obs->pos.x, obs->pos.y + 22.0f, obs->pos.z, 0.5f, 20.0f, 0.5f, 255, 0, 174);
                     }
                     
                 }
 
                 for (auto& [pos, txt, r, g, b] : loot_text_to_render)
                 {
-                    draw_text(pos.x, pos.y + 0.5f, pos.z, 0.05f, txt.c_str(), r, g, b, get_alpha_for_y(player_y, pos.y), &view, &projection);
+                    draw_text(pos.x, pos.y + 1.5f, pos.z, 0.15f, txt.c_str(), r, g, b, get_alpha_for_y(player_y, pos.y), &view, &projection);
                 }
 
                 // TODO: Render
