@@ -432,9 +432,9 @@ bool get_loot_information(tk::LootEntry* entry, bool include_equipment, bool* dr
         }
         draw = true;
         *draw_beam = true;
-        *beam_height = 200.0f;
+        *beam_height = 25.0f;
         *draw_text = true;
-        if (entry->value > 80000) {
+        if (entry->value < 80000) {
             *r = 0;
             *g = 255;
             *b = 170;
