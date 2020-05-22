@@ -426,7 +426,10 @@ bool get_loot_information(tk::LootEntry* entry, bool include_equipment, bool* dr
     *draw_text = false; //Don't display text for loot under 80k
     // highlight overrides all
     if (entry->highlighted || entry->value > 80000)
-    {
+    {   
+        if (!entry->highlighted) {
+            entry->highlighted = true;
+        }
         draw = true;
         *draw_beam = true;
         *beam_height = 200.0f;
