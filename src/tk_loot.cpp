@@ -72,9 +72,9 @@ namespace tk
 
         { // Second pass - correct name with localization.
             auto locale = load_file_as_json("db_locale.json");
-            for (auto& data_entry : locale["templates"].object_items())
+            for (auto& data_entry : locale.object_items())
             {
-                auto iter = m_db.find(data_entry.first);
+                auto iter = m_db.find(data_entry.second["bsgId"].string_value());
                 if (iter != std::end(m_db))
                 {
                     iter->second.name = data_entry.second["Name"].string_value();
