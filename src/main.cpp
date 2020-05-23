@@ -433,7 +433,7 @@ bool get_loot_information(tk::LootEntry* entry, bool include_equipment, bool* dr
         draw = true;
         *draw_beam = true;
         *beam_height = 25.0f;
-        *draw_text = true;
+        *draw_text = false;
         if (entry->value < 80000) {
             *r = 0;
             *g = 255;
@@ -705,10 +705,10 @@ void do_render(GraphicsState* gfx)
                     std::string name_and_val = obs->name + " (" + val + "k)";
                     draw_text(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, 0.10f, name_and_val.c_str(), r, g, b, get_alpha_for_y(player_y, obs->pos.y), &view, &projection);
                     if (total_val > 250000) {
-                        draw_box(obs->pos.x, obs->pos.y + 17.0f, obs->pos.z,0.5f,15.0f,0.5f, 21, 0, 255);
+                        draw_box(obs->pos.x, obs->pos.y + 13.0f, obs->pos.z,0.5f,15.0f,0.5f, 21, 0, 255);
                     }
                     else if (total_val > 500000) {
-                        draw_box(obs->pos.x, obs->pos.y + 22.0f, obs->pos.z, 0.5f, 20.0f, 0.5f, 255, 0, 174);
+                        draw_box(obs->pos.x, obs->pos.y + 18.0f, obs->pos.z, 0.5f, 20.0f, 0.5f, 255, 0, 174);
                     }
                     
                 }
