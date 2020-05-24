@@ -72,12 +72,25 @@ namespace tk
 
         { // Second pass - correct name with localization.
             auto locale = load_file_as_json("db_locale.json");
-            for (auto& data_entry : locale.object_items())
+            for (auto& data_entry : locale.array_items())
             {
-                auto iter = m_db.find(data_entry.second["bsgId"].string_value());
+                auto iter = m_db.find(data_entry["bsgId"].string_value());
                 if (iter != std::end(m_db))
                 {
-                    iter->second.name = data_entry.second["Name"].string_value();
+                    iter->second.name = data_entry["name"].string_value();
+                }else{
+                    LootItem item;
+                    item.id = data_entry["bsgId"].string_value();
+
+                    item.name = data_entry["name"].string_value();
+                    item.value = data_entry["price"].int_value();
+                    item.lootable = "true";
+                    item.bundle_path = "";
+                    item.width = data_entry["slots"].int_value();
+                    item.height = 1;
+                    item.rarity = LootItem::Common;
+                    item.overriden = false;
+                    m_db[item.id] = std::move(item);
                 }
             }
 

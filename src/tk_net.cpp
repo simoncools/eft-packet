@@ -340,6 +340,7 @@ namespace tk
 
     void skip_misc_stuff(BitStream& bstream)
     {
+        bstream.ReadBool();
         if (bstream.ReadBool())
         {
             bstream.ReadUInt8();
