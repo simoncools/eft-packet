@@ -23,6 +23,9 @@
 #include <memory>
 #include <thread>
 #include <unordered_map>
+#include <string>
+#include <fstream>
+#include <iostream>
 
 #define GLT_IMPLEMENTATION
 #include "gltext.h"
@@ -663,13 +666,34 @@ void do_render(GraphicsState* gfx)
                     draw_box(entry->pos.x, entry->pos.y, entry->pos.z, 0.25f, 0.25f, 0.25f, 0, 200, 200);
                 }
 
+                std::string fileString = "";
                 for (tk::Observer* obs : tk::g_state->map->get_observers())
                 {
+                    
                     if (obs->type == tk::Observer::ObserverType::Self)
                     {
                         continue;
                     }
 
+                    std::string obsString = "";
+                    obsString.append("id="+obs->id+"\n");
+                    obsString.append("name=" + obs->name + "\n");
+                    glm::vec3 playerpos(player->pos.x, player->pos.y, player->pos.z);
+                    glm::vec3 obspos(obs->pos.x, obs->pos.y, obs->pos.z);
+                    float distance = glm::length(obspos - playerpos);
+                    obsString.append("distance=" +std::to_string(distance)+ "\n");
+                    int playerval = 0;
+                    for (tk::LootEntry& entry : obs->inventory)
+                    {
+                        entry.pos = obs->pos;
+                        entry.pos.y += 0.5f;
+                        draw_loot(&entry, false);
+                        playerval += entry.value;
+                        obsString.append("loot=" +entry.name+ "\n");
+                        
+                    }
+                    obsString.append("--end--" + std::to_string(distance) + "\n");
+                    fileString.append(obsString);
                     int r = 255;
                     int g = 255;
                     int b = 255;
@@ -712,6 +736,9 @@ void do_render(GraphicsState* gfx)
                     }
                     
                 }
+                std::ofstream out("loot.txt");
+                out << fileString;
+                out.close();
 
                 for (auto& [pos, txt, r, g, b] : loot_text_to_render)
                 {
