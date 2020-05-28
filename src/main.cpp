@@ -27,11 +27,12 @@
 #include <fstream>
 #include <iostream>
 
+
 #define GLT_IMPLEMENTATION
 #include "gltext.h"
 
 #define LOCAL_ADAPTER_IP_ADDRESS "192.168.137.1" // ipconfig in cmd prompt on cheat machine, find local address, fill it in here
-#define MACHINE_PLAYING_GAME_IP_ADDRESS "192.168.137.85" // the local IP address of the machine communicating with EFT servers
+#define MACHINE_PLAYING_GAME_IP_ADDRESS "192.168.137.46" // the local IP address of the machine communicating with EFT servers
 
 struct Packet
 {
@@ -428,7 +429,7 @@ bool get_loot_information(tk::LootEntry* entry, bool include_equipment, bool* dr
     *draw_beam = false;
     *draw_text = false; //Don't display text for loot under 80k
     // highlight overrides all
-    if (entry->highlighted || entry->value > 200000)
+    if ((entry->highlighted || entry->value > 200000) && !include_equipment)
     {   
         if (!entry->highlighted) {
             entry->highlighted = true;
@@ -658,7 +659,7 @@ void do_render(GraphicsState* gfx)
                 for (tk::LootEntry* entry : tk::g_state->map->get_loot())
                 {
                     draw_loot(entry);     
-                    lootString.append("loot=" + entry->id + "//" + entry->name + "//" + std::to_string(entry->value) + "//" + std::to_string(entry->pos.x) + "//" + std::to_string(entry->pos.y) + "//" + std::to_string(entry->pos.z) + "\n");
+                    
                 }
 
                 for (tk::TemporaryLoot* entry : tk::g_state->map->get_temporary_loots())
@@ -667,29 +668,8 @@ void do_render(GraphicsState* gfx)
                     draw_box(entry->pos.x, entry->pos.y, entry->pos.z, 0.25f, 0.25f, 0.25f, 0, 200, 200);
                 }
 
-                std::string fileString = "";
                 for (tk::Observer* obs : tk::g_state->map->get_observers())
                 {
-                    std::string obsString = "";
-                    obsString.append("id=" + obs->id + "\n");
-                    obsString.append("name=" + obs->name + "\n");
-                    glm::vec3 playerpos(player->pos.x, player->pos.y, player->pos.z);
-                    glm::vec3 obspos(obs->pos.x, obs->pos.y, obs->pos.z);
-                    float distance = glm::length(obspos - playerpos);
-                    obsString.append("distance=" + std::to_string(distance) + "\n");
-                    int playerval = 0;
-                    for (tk::LootEntry& entry : obs->inventory)
-                    {
-                        entry.pos = obs->pos;
-                        entry.pos.y += 0.5f;
-                        draw_loot(&entry, false);
-                        playerval += entry.value;
-                        obsString.append("loot=" + entry.id + "//" + entry.name + "//" + std::to_string(entry.value) + "//" + std::to_string(obs->pos.x) + "//" + std::to_string(obs->pos.y) + "//" + std::to_string(obs->pos.z) + "\n");
-                    }
-                    obsString.append("value=" + std::to_string(playerval) + "\n");
-                    obsString.append("position=" + std::to_string(obs->pos.x) + "/" + std::to_string(obs->pos.y) + "/" + std::to_string(obs->pos.z) + "\n");
-                    obsString.append("--end--\n");
-                    fileString.append(obsString);
                     
                     if (obs->type == tk::Observer::ObserverType::Self)
                     {
@@ -737,17 +717,6 @@ void do_render(GraphicsState* gfx)
                         draw_box(obs->pos.x, obs->pos.y + 10.0f, obs->pos.z, 0.5f, 20.0f, 0.5f, 255, 0, 174);
                     }
                     
-                }
-                std::ofstream out("players.txt");
-                if (out.is_open()) {
-                    out << fileString;
-                    out.close();
-                }
-
-                std::ofstream lootFile("loot.txt");
-                if (lootFile.is_open()) {
-                    lootFile << lootString;
-                    lootFile.close();
                 }
 
                 for (auto& [pos, txt, r, g, b] : loot_text_to_render)
