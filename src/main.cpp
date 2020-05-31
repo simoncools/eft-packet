@@ -32,7 +32,7 @@
 #include "gltext.h"
 
 #define LOCAL_ADAPTER_IP_ADDRESS "192.168.137.1" // ipconfig in cmd prompt on cheat machine, find local address, fill it in here
-#define MACHINE_PLAYING_GAME_IP_ADDRESS "192.168.137.46" // the local IP address of the machine communicating with EFT servers
+#define MACHINE_PLAYING_GAME_IP_ADDRESS "192.168.137.86" // the local IP address of the machine communicating with EFT servers
 
 struct Packet
 {
@@ -429,7 +429,7 @@ bool get_loot_information(tk::LootEntry* entry, bool include_equipment, bool* dr
     *draw_beam = false;
     *draw_text = false; //Don't display text for loot under 80k
     // highlight overrides all
-    if ((entry->highlighted || entry->value > 200000) && !include_equipment)
+    if ((entry->highlighted || entry->value > 80000) && !include_equipment)
     {   
         if (!entry->highlighted) {
             entry->highlighted = true;
@@ -438,7 +438,7 @@ bool get_loot_information(tk::LootEntry* entry, bool include_equipment, bool* dr
         *draw_beam = true;
         *beam_height = 50.0f;
         *draw_text = false;
-        if (entry->value < 200000) {
+        if (entry->value < 80000) {
             *r = 0;
             *g = 255;
             *b = 170;
