@@ -32,7 +32,7 @@
 #include "gltext.h"
 
 #define LOCAL_ADAPTER_IP_ADDRESS "192.168.137.1" // ipconfig in cmd prompt on cheat machine, find local address, fill it in here
-#define MACHINE_PLAYING_GAME_IP_ADDRESS "192.168.137.86" // the local IP address of the machine communicating with EFT servers
+#define MACHINE_PLAYING_GAME_IP_ADDRESS "192.168.137.219" // the local IP address of the machine communicating with EFT servers
 
 struct Packet
 {
@@ -429,24 +429,38 @@ bool get_loot_information(tk::LootEntry* entry, bool include_equipment, bool* dr
     *draw_beam = false;
     *draw_text = false; //Don't display text for loot under 80k
     // highlight overrides all
-    if ((entry->highlighted || entry->value > 80000) && !include_equipment)
+    if ((entry->highlighted || entry->value > 50000) && include_equipment)
     {   
         if (!entry->highlighted) {
             entry->highlighted = true;
         }
         draw = true;
         *draw_beam = true;
-        *beam_height = 50.0f;
+        *beam_height = 25.0f;
         *draw_text = false;
-        if (entry->value < 80000) {
-            *r = 0;
-            *g = 255;
-            *b = 170;
-        }
-        else {
+        if (entry->value > 50000) {
+            if (entry->value > 100000) {
+                if (entry->value > 200000) {
+                    *beam_height = 100.0f;
+                    *r = 255;
+                    *g = 255;
+                    *b = 0;
+                }
+                else {
+                    *beam_height = 50.0f;
+                    *r = 140;
+                    *g = 0;
+                    *b = 255;
+                }
+            }else{ 
             *r = 153;
             *g = 101;
             *b = 21;
+            }         
+        }else {
+            *r = 0;
+            *g = 255;
+            *b = 170;
         }
     }
 
@@ -643,7 +657,7 @@ void do_render(GraphicsState* gfx)
                         {
                             if (draw_text)
                             {
-                                loot_text_to_render.push_back(std::make_tuple(entry->pos, entry->name, r, g, b));
+                                loot_text_to_render.push_back(std::make_tuple(entry->pos, entry->name + " - "+ std::to_string((entry->value) / 1000.0f)+"k", r, g, b));
                             }
 
                             if (draw_beam)
@@ -670,7 +684,7 @@ void do_render(GraphicsState* gfx)
 
                 for (tk::Observer* obs : tk::g_state->map->get_observers())
                 {
-                    
+
                     if (obs->type == tk::Observer::ObserverType::Self)
                     {
                         continue;
@@ -709,13 +723,15 @@ void do_render(GraphicsState* gfx)
                     std::string val(16, '\0');
                     val.resize(std::snprintf(val.data(), val.size(), "%.1f", total_val / 1000.0f));
                     std::string name_and_val = obs->name + " (" + val + "k)";
+                    if ((player->group_id != obs->group_id) || player->group_id.empty()) {
                     draw_text(obs->pos.x, obs->pos.y + 2.0f, obs->pos.z, 0.10f, name_and_val.c_str(), r, g, b, get_alpha_for_y(player_y, obs->pos.y), &view, &projection);
                     if (total_val > 250000) {
-                        draw_box(obs->pos.x, obs->pos.y + 7.5f, obs->pos.z,0.5f,15.0f,0.5f, 21, 0, 255);
+                        draw_box(obs->pos.x, obs->pos.y + 7.5f, obs->pos.z, 0.5f, 15.0f, 0.5f, 21, 0, 255);
                     }
                     else if (total_val > 500000) {
                         draw_box(obs->pos.x, obs->pos.y + 10.0f, obs->pos.z, 0.5f, 20.0f, 0.5f, 255, 0, 174);
                     }
+                }
                     
                 }
 
